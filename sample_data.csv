@@ -1,0 +1,10 @@
+Name,Age,Department,Salary
+Alice,25,Engineering,70000
+Bob,30,Marketing,60000
+Charlie,,Engineering,65000
+David,28,,55000
+Alice,25,Engineering,70000
+Eva,35,HR,75000
+Frank,29,Finance,
+Bob,30,Marketing,60000
+Grace,32,Finance,80000
