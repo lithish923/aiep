@@ -1,0 +1,261 @@
+22IT702 LAB MANUAL — EXTRACTED PYTHON CODES
+Source: 22IT702LAB MANUAL.pdf (13 pages)
+
+Note: The PDF is scanned. Code below is transcribed from the code sections and formatted for readability. A few obvious scan/OCR artifacts (such as missing quotes, indentation, and variable names) have been normalized so the programs are valid Python. The source's N-Queens experiment is shown with the intended backtracking logic.
+
+============================================================
+EXPERIMENT 1 — DATA PRE-PROCESSING
+PDF page 2
+============================================================
+
+import pandas as pd
+
+# Load dataset
+data = pd.read_csv("sample_data.csv")
+
+# Remove missing values
+data = data.dropna()
+
+# Remove duplicates
+data = data.drop_duplicates()
+
+# Save cleaned dataset
+data.to_csv("cleaned_dataset.csv", index=False)
+
+print("Data preprocessing completed successfully.")
+
+
+============================================================
+EXPERIMENT 2 — BREADTH FIRST SEARCH (BFS) AND DEPTH FIRST SEARCH (DFS)
+PDF pages 3–4
+============================================================
+
+from collections import deque
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': [],
+    'F': []
+}
+
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+
+    while queue:
+        node = queue.popleft()
+        if node not in visited:
+            print(node, end=" ")
+            visited.add(node)
+            queue.extend(graph[node])
+
+
+def dfs(graph, node, visited=None):
+    if visited is None:
+        visited = set()
+
+    print(node, end=" ")
+    visited.add(node)
+
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+
+
+print("BFS Traversal:")
+bfs(graph, 'A')
+
+print("\nDFS Traversal:")
+dfs(graph, 'A')
+print()
+
+
+============================================================
+EXPERIMENT 3A — HILL CLIMBING
+PDF page 5
+============================================================
+
+def hill_climbing():
+    current = 0
+
+    while current < 10:
+        print("Current State:", current)
+        current += 1
+
+    print("Goal State Reached:", current)
+
+
+hill_climbing()
+
+
+============================================================
+EXPERIMENT 3B — A* ALGORITHM
+PDF pages 6–7
+============================================================
+
+import heapq
+
+graph = {
+    'A': {'B': 1, 'C': 3},
+    'B': {'D': 3, 'E': 1},
+    'C': {'F': 5},
+    'D': {},
+    'E': {'F': 1},
+    'F': {}
+}
+
+heuristic = {
+    'A': 6,
+    'B': 4,
+    'C': 4,
+    'D': 2,
+    'E': 1,
+    'F': 0
+}
+
+
+def a_star(start, goal):
+    open_list = []
+    heapq.heappush(open_list, (0, start))
+
+    g_cost = {start: 0}
+    parent = {start: None}
+
+    while open_list:
+        _, current = heapq.heappop(open_list)
+
+        if current == goal:
+            path = []
+            while current is not None:
+                path.append(current)
+                current = parent[current]
+            return path[::-1]
+
+        for neighbor, cost in graph[current].items():
+            new_cost = g_cost[current] + cost
+
+            if neighbor not in g_cost or new_cost < g_cost[neighbor]:
+                g_cost[neighbor] = new_cost
+                f_cost = new_cost + heuristic[neighbor]
+                heapq.heappush(open_list, (f_cost, neighbor))
+                parent[neighbor] = current
+
+    return None
+
+
+print("Path:", a_star('A', 'F'))
+
+
+============================================================
+EXPERIMENT 4 — RULE-BASED CHATBOT
+PDF page 8
+============================================================
+
+def chatbot():
+    print("Chatbot: Hello! Type 'bye' to exit.")
+
+    while True:
+        user = input("You: ").lower()
+
+        if user == "hello":
+            print("Chatbot: Hi! How can I help you?")
+        elif user == "how are you":
+            print("Chatbot: I am functioning well. Thank you!")
+        elif user == "what is ai":
+            print("Chatbot: AI stands for Artificial Intelligence.")
+        elif user == "bye":
+            print("Chatbot: Goodbye!")
+            break
+        else:
+            print("Chatbot: Sorry, I don't understand.")
+
+
+chatbot()
+
+
+============================================================
+EXPERIMENT 5 — INFERENCE SYSTEM
+PDF pages 10–11
+============================================================
+
+facts = ["rainy"]
+
+rules = {
+    "rainy": "carry_umbrella",
+    "carry_umbrella": "stay_dry"
+}
+
+inferred = []
+
+for fact in facts:
+    if fact in rules:
+        conclusion = rules[fact]
+        inferred.append(conclusion)
+
+        if conclusion in rules:
+            inferred.append(rules[conclusion])
+
+print("Facts:", facts)
+print("Inferred Knowledge:", inferred)
+
+
+============================================================
+EXPERIMENT 6 — N-QUEENS PROBLEM
+PDF pages 12–13
+============================================================
+
+def is_safe(board, row, col, n):
+    # Check this row on the left side
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+
+    # Check upper-left diagonal
+    i, j = row, col
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j -= 1
+
+    # Check lower-left diagonal
+    i, j = row, col
+    while i < n and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i += 1
+        j -= 1
+
+    return True
+
+
+def solve_nqueen(board, col, n):
+    if col >= n:
+        return True
+
+    for i in range(n):
+        if is_safe(board, i, col, n):
+            board[i][col] = 1
+
+            if solve_nqueen(board, col + 1, n):
+                return True
+
+            # Backtrack
+            board[i][col] = 0
+
+    return False
+
+
+n = 8
+board = [[0 for _ in range(n)] for _ in range(n)]
+
+if solve_nqueen(board, 0, n):
+    print("Solution for", n, "Queens:")
+    for row in board:
+        print(row)
+else:
+    print("No solution exists")
